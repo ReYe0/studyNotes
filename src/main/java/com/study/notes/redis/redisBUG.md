@@ -25,3 +25,14 @@ shutdown  # 关闭该redis服务
 exit       # 退出
 redis-server.exe redis.windows.conf  # 重新启动reids 服务
 ```
+## MISCONF Redis is configured to save RDB snapshots, but it is currently not able to persist on disk. Commands that may modify the data set are disabled, because this instance is configured to report errors during writes if RDB snapshotting fails (stop-writes-on-bgsave-error option). Please check the Redis logs for details about the RDB error.
+Redis配置为保存RDB快照，但它当前无法在磁盘上持久化。可以修改数据集的命令被禁用，因为此实例配置为在RDB快照失败时报告写入期间的错误（停止对bgsave error的写入选项）
+
+原因是因为强制关闭 Redis 快照导致不能持久化（之前部署Redis的机器断电过，猜测是因为这个导致的）
+
+解决方案就是重启Redis后，登录进去，将stop-writes-on-bgsave-error设置为no
+
+```shell
+127.0.0.1:6379> config set stop-writes-on-bgsave-error no
+```
+但需要注意的是，执行这个命令只能暂时解决无法 set 的问题，具体的问题还是要看 Redis 的 log 信息详细排查错误才行
