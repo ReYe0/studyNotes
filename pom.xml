@@ -18,8 +18,33 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13-beta-3</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.infiniteautomation/modbus4j -->
+        <dependency>
+            <groupId>com.infiniteautomation</groupId>
+            <artifactId>modbus4j</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intelligt.modbus</groupId>
+            <artifactId>jlibmodbus</artifactId>
+            <version>1.2.9.7</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -72,5 +97,29 @@
 <!--            <version>1.7.5</version>-->
 <!--        </dependency>-->
     </dependencies>
-
+    <!-- 若想引用modbus4j需要引入下列repository id:ias-snapshots id:ias-releases 两个 ，使用默认仓库下载，不要使用阿里云仓库-->
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>ias-snapshots</id>
+            <name>Infinite Automation Snapshot Repository</name>
+            <url>https://maven.mangoautomation.net/repository/ias-snapshot/</url>
+        </repository>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>ias-releases</id>
+            <name>Infinite Automation Release Repository</name>
+            <url>https://maven.mangoautomation.net/repository/ias-release/</url>
+        </repository>
+    </repositories>
 </project>
