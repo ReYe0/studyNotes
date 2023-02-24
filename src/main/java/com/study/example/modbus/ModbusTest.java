@@ -15,10 +15,8 @@ public class ModbusTest {
             try {
                 // 设置主机TCP参数
                 TcpParameters tcpParameters = new TcpParameters();
-
                 // 设置TCP的ip地址
-                InetAddress adress = InetAddress.getByName("127.0.0.1");
-
+                InetAddress adress = InetAddress.getByName("192.168.0.7");
                 // TCP参数设置ip地址
                 // tcpParameters.setHost(InetAddress.getLocalHost());
                 tcpParameters.setHost(adress);
