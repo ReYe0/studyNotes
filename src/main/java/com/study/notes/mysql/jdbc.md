@@ -376,11 +376,36 @@ Statement对象的作用就是用来执行SQL语句。而针对不同类型的SQ
 
 * 执行DDL、DML语句
 
-  ![image-20210725175151272](assets/image-20210725175151272.png)
+```java
+/*
+ * 执行给定的 SQL 语句，该语句可以是 INSERT、UPDATE 或 DELETE 语句，也可以是不返回任何内容的 SQL 语句，例如 SQL DDL 语句。
+ * 注意：此方法不能在 PreparedStatement 或 CallableStatement（已调用语句）上调用。
+ * 参数：sql – SQL 数据操作语言 （DML） 语句，例如 INSERT、UPDATE 或 DELETE;或不返回任何内容的 SQL 语句，例如 DDL 语句。
+ * 返回：（1） SQL 数据操作语言 （DML） 语句的行计数或 （2） 0 对于不返回任何内容的 SQL 语句 
+ * 抛出：SQLTimeoutException – 当驱动程序确定已超出 setQueryTimeout 方法指定的超时值，
+ * 并且至少尝试取消当前正在运行的语句 SQLException – 如果发生数据库访问错误， 此方法在闭合语句上调用，
+ * 给定的 SQL 语句生成一个 ResultSet 对象，该方法在 PreparedStatement 或 CallableStatement 上调用
+ */
+int executeUpdate(String sql) throws SQLException;
+```
+
+
+
 
 * 执行DQL语句
 
-  <img src="assets/image-20210725175131533.png" alt="image-20210725175131533" style="zoom:80%;" />
+```java
+/*
+ * 执行给定的 SQL 语句，该语句返回单个结果集对象。
+ * 注意：此方法不能在 PreparedStatement 或 CallableStatement（已调用语句）上调用。
+ * 参数：sql – 要发送到数据库的 SQL 语句，通常是静态 SQL SELECT 语句 
+ * 返回：一个 ResultSet 对象，其中包含给定查询生成的数据;
+ * 永不空抛出： SQLTimeoutException – 当驱动程序确定已超出 setQueryTimeout 方法指定的超时值，并且至少尝试取消当前运行的语句 
+ * SQLException – 如果发生数据库访问错误，则在关闭语句上调用此方法，给定的 SQL 语句生成除单个 ResultSet 对象以外的任何内容， 
+ * 该方法在 PreparedStatement 或 CallableStatement 上调用
+ */
+ResultSet executeQuery(String sql) throws SQLException;
+```
 
   该方法涉及到了 `ResultSet` 对象，而这个对象我们还没有学习，一会再重点讲解。
 
@@ -468,8 +493,8 @@ ResultSet（结果集对象）作用：
 
 而执行了DQL语句后就会返回该对象，对应执行DQL语句的方法如下：
 
-```sql
-ResultSet  executeQuery(sql)：执行DQL 语句，返回 ResultSet 对象
+```java
+ResultSet  executeQuery(sql);//执行DQL 语句，返回 ResultSet 对象
 ```
 
 那么我们就需要从 `ResultSet` 对象中获取我们想要的数据。`ResultSet` 对象提供了操作查询结果数据的方法，如下：
@@ -493,7 +518,16 @@ ResultSet  executeQuery(sql)：执行DQL 语句，返回 ResultSet 对象
 
 如下图为执行SQL语句后的结果
 
-<img src="assets/image-20210725181320813.png" alt="image-20210725181320813" style="zoom:80%;" />
+<table>
+<tr>
+<td>id</td>
+<td>name</td>
+<td>money</td>
+</tr>
+<tr><td>1</td><td>张三</td><td>3000</td></tr>
+<tr><td>2</td><td>李四</td><td>1000</td></tr>
+<tr><td>4</td><td>王五</td><td>2000</td></tr>
+</table>
 
 一开始光标指定于第一行前，如图所示红色箭头指向于表头行。当我们调用了 `next()` 方法后，光标就下移到第一行数据，并且方法返回true，此时就可以通过 `getInt("id")` 获取当前行id字段的值，也可以通过 `getString("name")` 获取当前行name字段的值。如果想获取下一行的数据，继续调用 `next()`  方法，以此类推。
 
