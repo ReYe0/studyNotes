@@ -94,3 +94,11 @@ mysql8以下的去除cj，更高版本的加上cj，eg：`driver-class-name: com
 
 ### 解决五：项目使用了springcloud+nacos系列
 需要配置启用了那个配置文件
+
+
+### test类dao层注册失败
+测试类加上如下代码
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = '启动类'.class)
+```
