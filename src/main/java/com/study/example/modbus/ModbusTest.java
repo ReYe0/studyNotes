@@ -34,7 +34,7 @@ public class ModbusTest {
                 int quantity = 23;//读取的寄存器数量
                 try {
                     if (!master.isConnected()) {
-                        master.connect();// 开启连接
+                        master.connect();// 开启连接,麻烦
                     }
                     // 读取对应从机的数据，readInputRegisters读取的写寄存器，功能码04
                     int[] registerValues = master.readInputRegisters(slaveId, offset, quantity);
