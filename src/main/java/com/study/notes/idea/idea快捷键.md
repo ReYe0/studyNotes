@@ -11,5 +11,5 @@
 文件内替换：Ctrl+R
 进入方法体：Ctrl+B
 提交git的commit：Ctrl+K
-
+快速折叠if/else语句：Ctrl+Shift+。
 ```
