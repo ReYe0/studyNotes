@@ -39,11 +39,14 @@ public class OtherTest {
     @Test
     public void test3(){
 //        byte a = 1;//预警
-        byte a = 2;//报警
-        for (int i = 0; i < 8; i++) {
-            System.out.println((int)((a>>(i)) & 0x1));
-        }
+//        byte a = 2;//报警
+//        for (int i = 0; i < 8; i++) {
+//            System.out.println((int)((a>>(i)) & 0x1));
+//        }
 //        int bit = (int)((a>>1) & 0x1);
 //        System.out.println("获取第一个bit值为：" + bit);
+
+
+        System.out.println(100/1000f);
     }
 }
