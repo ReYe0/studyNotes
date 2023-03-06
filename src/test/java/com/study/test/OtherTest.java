@@ -1,9 +1,6 @@
 package com.study.test;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.dom4j.*;
 import org.junit.Test;
 
 public class OtherTest {
@@ -24,7 +21,29 @@ public class OtherTest {
             e.printStackTrace();
         }
         Element root = document.getRootElement();
+        System.out.println("根节点：" + root);
+        Attribute hh_limit = root.attribute(13);
+        Attribute h_limit = root.attribute(14);
+        System.out.println(hh_limit);
+        System.out.println(h_limit);
+
+        String hh_limitValue = hh_limit.getValue();
+        String h_limitValue = h_limit.getValue();
+
+        System.out.println("报警值：" + hh_limitValue);
+        System.out.println("预警值：" + h_limitValue);
 
 
+    }
+
+    @Test
+    public void test3(){
+//        byte a = 1;//预警
+        byte a = 2;//报警
+        for (int i = 0; i < 8; i++) {
+            System.out.println((int)((a>>(i)) & 0x1));
+        }
+//        int bit = (int)((a>>1) & 0x1);
+//        System.out.println("获取第一个bit值为：" + bit);
     }
 }
