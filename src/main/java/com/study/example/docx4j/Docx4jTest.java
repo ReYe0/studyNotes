@@ -1,14 +1,20 @@
 package com.study.example.docx4j;
 
+import lombok.extern.slf4j.Slf4j;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.bind.JAXBElement;
 import java.io.File;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
+@Slf4j
 public class Docx4jTest {
     //用一些文本创建文档
     @Test
@@ -175,6 +181,79 @@ public class Docx4jTest {
         tbl.getContent().add(tr);
         wordMlPackage.getMainDocumentPart().addObject(tbl);//将表格添加到word中
         wordMlPackage.save(new File("HelloWord8.docx"));//保存
+    }
+    //获取已有的word修改其表格
+    @Test
+    public void test9(){
+        WordprocessingMLPackage wordMlPackage = null;
+        try {
+            wordMlPackage = WordprocessingMLPackage.load(new File("helloWord6.docx"));
+        } catch (Docx4JException e) {
+            log.error("文件加载失败");
+            e.printStackTrace();
+        }
+        MainDocumentPart mainDocPart = wordMlPackage.getMainDocumentPart();
+        List<Object> children = ((ContentAccessor) mainDocPart).getContent();
+        JAXBElement jaxbElement = (JAXBElement) children.get(0);
+        Tbl tbl = (Tbl) jaxbElement.getValue();
+        List<Object> trList = tbl.getContent();
+        Tr tr = (Tr) trList.get(0);
+
+        JAXBElement jax_tc = (JAXBElement) tr.getContent().get(0);
+        Tc tc = (Tc) jax_tc.getValue();
+        P p = (P) tc.getContent().get(0);//段落
+        R r = (R) p.getContent().get(0);//行
+        JAXBElement jax = (JAXBElement) r.getContent().get(0);
+        Text text = (Text) jax.getValue();
+        String value = text.getValue();
+        log.error("获取到表格中第一列第一行的值为：" + value);
+        text.setValue("我成功啦");
+        try {
+            wordMlPackage.save(new File("helloWord6.docx"));
+        } catch (Docx4JException e) {
+            log.error("保存文件失败");
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * @Description:得到所有表格
+     */
+    public List<Tbl> getAllTbl(WordprocessingMLPackage wordMLPackage) {
+        MainDocumentPart mainDocPart = wordMLPackage.getMainDocumentPart();
+        List<Object> objList = getAllElementFromObject(mainDocPart, Tbl.class);
+        if (objList == null) {
+            return null;
+        }
+        List<Tbl> tblList = new ArrayList<Tbl>();
+        for (Object obj : objList) {
+            if (obj instanceof Tbl) {
+                Tbl tbl = (Tbl) obj;
+                tblList.add(tbl);
+            }
+        }
+        return tblList;
+    }
+    /**
+     * 得到指定类型的元素
+     * @param obj
+     * @param toSearch
+     * @return
+     */
+    public static List<Object> getAllElementFromObject(Object obj,Class<?> toSearch) {
+        List<Object> result = new ArrayList<Object>();
+        if (obj instanceof JAXBElement)
+            obj = ((JAXBElement<?>) obj).getValue();
+        if (obj.getClass().equals(toSearch))
+            result.add(obj);
+        else if (obj instanceof ContentAccessor) {
+            List<?> children = ((ContentAccessor) obj).getContent();
+            for (Object child : children) {
+                result.addAll(getAllElementFromObject(child, toSearch));
+            }
+        }
+        return result;
     }
 
 
