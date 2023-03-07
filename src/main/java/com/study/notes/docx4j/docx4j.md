@@ -4,7 +4,13 @@
 
 ---
 
-## 引入依赖
+## 1.快速入门
+
+**官网：**[Office Open XML - OOXML 字处理ML文件的剖析](http://officeopenxml.com/anatomyofOOXML)
+
+### 1.1.引入依赖
+
+有些应该是多的，按需要引入
 
 ```pom
 <dependencies>
@@ -18,10 +24,15 @@
 		<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 		<version>8.2.6</version>
 	</dependency>
+    <dependency>
+        <groupId>org.docx4j</groupId>
+        <artifactId>docx4j</artifactId>
+        <version>6.1.2</version>
+    </dependency>
 </dependencies>
 ```
 
-## 用一些文本创建文档
+### 1.2.用一些文本创建文档
 
 ```java
  @Test
@@ -32,7 +43,7 @@
     }
 ```
 
-## 添加带样式的文本
+### 1.3.添加带样式的文本
 
 ```java
  @Test
@@ -44,7 +55,7 @@
     }
 ```
 
-## 添加表格
+### 1.4.添加表格
 
 ```java
  public void test3() throws Docx4JException {
@@ -69,7 +80,7 @@
     }
 ```
 
-## 给表格添加边框
+### 1.5.给表格添加边框
 
 
 
