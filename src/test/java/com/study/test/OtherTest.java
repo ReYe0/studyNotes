@@ -47,6 +47,13 @@ public class OtherTest {
 //        System.out.println("获取第一个bit值为：" + bit);
 
 
-        System.out.println(100/1000f);
+//        System.out.println(100/1000f);
+        int val = 16248;
+        String s = Integer.toBinaryString(val);
+        String substring = s.substring(9, 10);
+        String a = "0123456789";
+        String b = a.substring(9, 10);
+        System.out.println(b);
+        System.out.println(substring);
     }
 }
