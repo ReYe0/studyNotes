@@ -130,3 +130,9 @@ ARP协议：是一种解析地址的协议，根据通信方的IP地址就可以
 
 DNS（Domain Name System）服务是和HTTP协议一样位于应用层的协议。它提供域名到IP地址之间的解析服务。
 
+简而言之，就是把域名变成ip。
+
+### 1.4.URI和URL
+
+* URI：（Uniform Resource Identifier）同一资源标识符
+* URL：（Uniform Resource Locator）同一资源定位符。
