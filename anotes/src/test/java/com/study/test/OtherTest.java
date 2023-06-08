@@ -388,6 +388,7 @@ public class OtherTest {
 //        System.out.println(numOfDigits); // 输出 5
 //        float a = 0.043688685f;
 //        System.out.println(a/9.8f);
-        System.out.println("详细分析1".substring(4,5));
+//        System.out.println("详细分析1".substring(4,5));
+        System.out.println(11%2);
     }
 }
