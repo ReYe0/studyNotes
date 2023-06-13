@@ -3,26 +3,39 @@ package com.study.test;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
+import org.xlsx4j.sml.Col;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.List;
 
 public class LineChartExample {
 
     public static void main(String[] args) throws IOException {
         // 创建时间序列并添加数据
-        TimeSeries series = new TimeSeries("名字");
+//        TimeSeries series = new TimeSeries("名字");
+        TimeSeries series = new TimeSeries("");
         series.add(new Second(new Date(1683786570904l)), 0.01);
-        series.add(new Second(new Date(1684789471783l)), 0.02);
+        series.add(new Second(new Date(1684789471783l)), 2);
+//        series.add(new Second(new Date(1684789471998l)), 0.2);
 //        series.add(new Month(2, 2015), 200.0);
 //        series.add(new Month(3, 2015), 150.0);
 //        series.add(new Month(4, 2015), 300.0);
@@ -35,14 +48,13 @@ public class LineChartExample {
         dataset.addSeries(series);
 
         // 创建折线图
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("某某风场", "x", "y", dataset);
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("", "", "测点名字\n\n\r11", dataset);
 
         // 设置背景色和渐变效果
-        GradientPaint gp1 = new GradientPaint(
-                0.0f, 0.0f, new Color(48, 57, 114),
-//                0.0f, 0.0f, new Color(140, 152, 186)
-                0.0f, 0.0f, new Color(9, 46, 85)
-        );
+//        GradientPaint gp1 = new GradientPaint(
+//                0.0f, 0.0f, new Color(48, 57, 114),
+//                0.0f, 0.0f, new Color(9, 46, 85)
+//        );
         chart.setBorderVisible(false);
         Font font = new Font("MicrosoftYaHei", Font.PLAIN, 12);
         chart.getTitle().setFont(font);
@@ -55,15 +67,33 @@ public class LineChartExample {
 //        plot.setRangeAxis(rangeAxis); // 设置纵轴
         plot.getDomainAxis().setLabelFont(font);
         plot.getRangeAxis().setLabelFont(font);
-        plot.setBackgroundPaint(gp1);
-        plot.setDomainGridlinePaint(Color.white);
-        plot.setRangeGridlinePaint(Color.white);
+        plot.setBackgroundPaint(Color.white);
+//        plot.setDomainGridlinePaint(Color.black);
+
+        plot.setRangeGridlinePaint(Color.gray);
         plot.setRangeGridlinesVisible(true);
-        plot.setDomainGridlinesVisible(true);
+        plot.setRangeGridlineStroke(new BasicStroke(0.5f));
+        plot.setDomainGridlinesVisible(false);
         plot.setDomainCrosshairVisible(true);
         plot.setRangeCrosshairVisible(true);
 //        plot.setDomainAxis(new DateAxis());
-        plot.setDomainAxis(new DateAxis("x"));
+        plot.setDomainAxis(new DateAxis());
+//        plot.getDomainAxis().setTickMarkPaint(Color.red);
+        NumberAxis rangeAxis = (NumberAxis)plot.getRangeAxis();
+        rangeAxis.setTickLabelFont(font); // 设置字体
+        rangeAxis.setLabelAngle(Math.PI / 2); // 设置角度（弧度制）
+        // 设置 Y 轴数字格式为保留2位小数
+        DecimalFormat df = new DecimalFormat("#.000");
+        rangeAxis.setNumberFormatOverride(df);
+        // 设置Y轴标签动态调整
+//        rangeAxis.setAutoRangeIncludesZero(false);
+//
+//// 设置Y轴标签包括0时粘性放置0
+//        rangeAxis.setAutoRangeStickyZero(true);
+        chart.removeLegend();
+
+
+
         plot.setRenderer(createRenderer());
 
         // 将折线图保存为PNG格式的图片
@@ -76,14 +106,17 @@ public class LineChartExample {
     // 创建折线图渲染器
     private static XYLineAndShapeRenderer createRenderer() {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setBaseShapesVisible(true);
+        renderer.setSeriesPaint(0,Color.black);
+        renderer.setBaseShapesVisible(false);
         renderer.setDrawSeriesLineAsPath(true);
         renderer.setBaseShapesFilled(true);
         renderer.setBasePaint(Color.white);
         renderer.setUseFillPaint(true);
         renderer.setBaseFillPaint(Color.blue);
-        renderer.setBaseItemLabelPaint(Color.blue);
-        renderer.setBaseOutlinePaint(Color.blue);
+        // 设置所有点的形状为圆形，大小为6
+//        renderer.setBaseShape(new Ellipse2D.Double(-1.0, -1.0, 1.0, 1.0));
+//        renderer.setBaseItemLabelPaint(Color.yellow);
+//        renderer.setBaseOutlinePaint(Color.cyan);
         return renderer;
     }
 }

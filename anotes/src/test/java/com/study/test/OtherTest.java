@@ -30,6 +30,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -389,6 +392,16 @@ public class OtherTest {
 //        float a = 0.043688685f;
 //        System.out.println(a/9.8f);
 //        System.out.println("详细分析1".substring(4,5));
-        System.out.println(11%2);
+//        System.out.println(11%2);
+//        String localIP = null;
+//        try {
+//            localIP = InetAddress.getLocalHost().getHostAddress();
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(localIP);
+        DecimalFormat num_df = new DecimalFormat("#.000");
+        String formattedNum = num_df.format(0.1);
+        System.out.println(formattedNum);
     }
 }
