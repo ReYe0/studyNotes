@@ -5,6 +5,7 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
@@ -34,7 +35,7 @@ public class LineChartExample {
 //        TimeSeries series = new TimeSeries("名字");
         TimeSeries series = new TimeSeries("");
         series.add(new Second(new Date(1683786570904l)), 0.01);
-        series.add(new Second(new Date(1684789471783l)), 2);
+        series.add(new Second(new Date(1684789471783l)), 0.2);
 //        series.add(new Second(new Date(1684789471998l)), 0.2);
 //        series.add(new Month(2, 2015), 200.0);
 //        series.add(new Month(3, 2015), 150.0);
@@ -48,7 +49,7 @@ public class LineChartExample {
         dataset.addSeries(series);
 
         // 创建折线图
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("", "", "测点名字\n\n\r11", dataset);
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("", "", "测点名字测点名字", dataset);
 
         // 设置背景色和渐变效果
 //        GradientPaint gp1 = new GradientPaint(
@@ -82,11 +83,22 @@ public class LineChartExample {
         NumberAxis rangeAxis = (NumberAxis)plot.getRangeAxis();
         rangeAxis.setTickLabelFont(font); // 设置字体
         rangeAxis.setLabelAngle(Math.PI / 2); // 设置角度（弧度制）
-        // 设置 Y 轴数字格式为保留2位小数
-        DecimalFormat df = new DecimalFormat("#.000");
+//        // 设置 Y 轴数字格式为保留2位小数
+        DecimalFormat df = new DecimalFormat("#.##");
         rangeAxis.setNumberFormatOverride(df);
+        rangeAxis.setLabelLocation(AxisLabelLocation.HIGH_END);
+        String str = "测点名字测点你名字";
+        int length = str.length();
+        System.out.println(length);
+        String space = " ";
+        for (int i = 0; i < length*3; i++) {
+            space += " ";
+        }
+        rangeAxis.setLabel(str.trim());
+//        rangeAxis.setTickLabelInsets(new RectangleInsets());
+//        rangeAxis.setAttributedLabel("测点名字测点名字");
         // 设置Y轴标签动态调整
-//        rangeAxis.setAutoRangeIncludesZero(false);
+//        rangeAxis.setAutoRangeIncludesZero(true);
 //
 //// 设置Y轴标签包括0时粘性放置0
 //        rangeAxis.setAutoRangeStickyZero(true);
