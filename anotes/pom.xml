@@ -16,6 +16,12 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
     <dependencies>
+<!--        tio依赖-->
+        <dependency>
+            <groupId>org.t-io</groupId>
+            <artifactId>tio-core</artifactId>
+            <version>3.7.5.v20211028-RELEASE</version>
+        </dependency>
         <!--        获取word当前页码-->
         <dependency>
             <groupId>org.apache.poi</groupId>
