@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 
 public class TCPClient {
     public static void main(String[] args) throws IOException {
@@ -33,6 +34,7 @@ public class TCPClient {
             //3、写出数据
             String a = "020403E80006F04B";
             os.write(hexStringToBytes(a));
+            os.flush();
 //            System.out.println(hexStringToBytes(a).toString());
 
             dis = new DataInputStream(socket.getInputStream());
@@ -48,10 +50,10 @@ public class TCPClient {
 //            System.out.println("Y 实际角度：" + i1 /3600f);
 //            System.out.println("实际温度：" + dis.readInt() /10f);
 
-//            byte[] bytes = new byte[1024];
-//            dis.read(bytes);
-//            String hexString = DatatypeConverter.printHexBinary(bytes);
-//            System.out.println(hexString);
+            byte[] bytes = new byte[1024];
+            dis.read(bytes);
+            String hexString = DatatypeConverter.printHexBinary(bytes);
+            System.out.println(hexString);
 //            System.out.println(dis);
 //            byte b = dis.readByte();
 //            Head head = new Head(dis);
