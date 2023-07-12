@@ -12,6 +12,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.time.Minute;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -24,18 +25,29 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class LineChartExample {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         // 创建时间序列并添加数据
 //        TimeSeries series = new TimeSeries("名字");
         TimeSeries series = new TimeSeries("");
-        series.add(new Second(new Date(1683786570904l)), 0.01);
-        series.add(new Second(new Date(1684789471783l)), 0.2);
+//        series.add(new Minute(1, 1, 1, 1, 2022), 0.5);
+//        series.add(new Minute(2, 1, 1, 2, 2022), 0.6);
+//        series.add(new Minute(3, 1, 1, 4, 2022), 0.8);
+        series.add(new Second(30,3, 1, 1, 1, 2022), 0.8);
+        series.add(new Second(30,3, 1, 1, 2, 2022), 0.8);
+        series.add(new Second(30,3, 1, 1, 4, 2022), 0.8);
+//        series.add(new Second(date), 0.491);
+//        series.add(new Second(date2), 0.191);
+//        series.add(new Second(new Date(1683786570904l)), 0.791);
+//        series.add(new Second(new Date(1684789471783l)), 0.562);
 //        series.add(new Second(new Date(1684789471998l)), 0.2);
 //        series.add(new Month(2, 2015), 200.0);
 //        series.add(new Month(3, 2015), 150.0);
@@ -84,16 +96,16 @@ public class LineChartExample {
         rangeAxis.setTickLabelFont(font); // 设置字体
         rangeAxis.setLabelAngle(Math.PI / 2); // 设置角度（弧度制）
 //        // 设置 Y 轴数字格式为保留2位小数
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat df = new DecimalFormat("#.###");
         rangeAxis.setNumberFormatOverride(df);
-        rangeAxis.setLabelLocation(AxisLabelLocation.HIGH_END);
+        rangeAxis.setLabelLocation(AxisLabelLocation.MIDDLE);
         String str = "测点名字测点你名字";
-        int length = str.length();
-        System.out.println(length);
-        String space = " ";
-        for (int i = 0; i < length*3; i++) {
-            space += " ";
-        }
+//        int length = str.length();
+//        System.out.println(length);
+//        String space = " ";
+//        for (int i = 0; i < length*3; i++) {
+//            space += " ";
+//        }
         rangeAxis.setLabel(str.trim());
 //        rangeAxis.setTickLabelInsets(new RectangleInsets());
 //        rangeAxis.setAttributedLabel("测点名字测点名字");
