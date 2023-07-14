@@ -25,6 +25,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -37,13 +38,13 @@ public class LineChartExample {
     public static void main(String[] args) throws IOException, ParseException {
         // 创建时间序列并添加数据
 //        TimeSeries series = new TimeSeries("名字");
-        TimeSeries series = new TimeSeries("");
+//        TimeSeries series = new TimeSeries("");
 //        series.add(new Minute(1, 1, 1, 1, 2022), 0.5);
 //        series.add(new Minute(2, 1, 1, 2, 2022), 0.6);
 //        series.add(new Minute(3, 1, 1, 4, 2022), 0.8);
-        series.add(new Second(30,3, 1, 1, 1, 2022), 0.8);
-        series.add(new Second(30,3, 1, 1, 2, 2022), 0.8);
-        series.add(new Second(30,3, 1, 1, 4, 2022), 0.8);
+//        series.add(new Second(30,3, 1, 1, 1, 2022), 0.8);
+//        series.add(new Second(30,3, 1, 1, 2, 2022), 0.8);
+//        series.add(new Second(30,3, 1, 1, 4, 2022), 0.8);
 //        series.add(new Second(date), 0.491);
 //        series.add(new Second(date2), 0.191);
 //        series.add(new Second(new Date(1683786570904l)), 0.791);
@@ -57,8 +58,17 @@ public class LineChartExample {
 //        series.add(new Month(7, 2015), 350.0);
 //        series.add(new Month(7, 2015), 500.0);
 
+        TimeSeries timeSeries = new TimeSeries("折线图");
+
+        // 添加数据
+        timeSeries.add(new Second(new Date()), 10);
+        timeSeries.add(new Second(new Timestamp(1654531200000l)), 20);
+        timeSeries.add(new Second(new Timestamp(System.currentTimeMillis() + 120000)), 15);
+        timeSeries.add(new Second(new Timestamp(System.currentTimeMillis() + 180000)), 25);
+
+
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(series);
+        dataset.addSeries(timeSeries);
 
         // 创建折线图
         JFreeChart chart = ChartFactory.createTimeSeriesChart("", "", "测点名字测点名字", dataset);
@@ -78,10 +88,15 @@ public class LineChartExample {
 //        NumberAxis rangeAxis = new NumberAxis(); // 新建一个纵轴
 //        rangeAxis.setLabel("纵轴"); // 设定纵轴标签
 //        plot.setRangeAxis(rangeAxis); // 设置纵轴
-        plot.getDomainAxis().setLabelFont(font);
+//        plot.getDomainAxis().setLabelFont(font);
         plot.getRangeAxis().setLabelFont(font);
         plot.setBackgroundPaint(Color.white);
 //        plot.setDomainGridlinePaint(Color.black);
+        // 设置x轴为日期时间格式
+        DateAxis dateAxis = (DateAxis) chart.getXYPlot().getDomainAxis();
+        dateAxis.setDateFormatOverride(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
+
 
         plot.setRangeGridlinePaint(Color.gray);
         plot.setRangeGridlinesVisible(true);

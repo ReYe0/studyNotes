@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@SuppressWarnings("all")
 public class Docx4jTest {
     //用一些文本创建文档
     @Test
@@ -215,6 +216,7 @@ public class Docx4jTest {
             e.printStackTrace();
         }
     }
+
 
 
     /**
