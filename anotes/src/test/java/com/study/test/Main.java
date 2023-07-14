@@ -7,8 +7,11 @@ package com.study.test;
  * @Date: 2023/7/14 21:55
  */
 import org.docx4j.Docx4J;
+import org.docx4j.model.structure.DocumentModel;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.Body;
 import org.docx4j.wml.Document;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
@@ -23,6 +26,10 @@ public class Main {
 
         try {
             WordprocessingMLPackage wordMLPackage = Docx4J.load(new File(docxFilePath));
+            DocumentModel documentModel = wordMLPackage.getDocumentModel();
+            List<SectionWrapper> sections = documentModel.getSections();
+            Body body = wordMLPackage.getMainDocumentPart().getJaxbElement().getBody();
+            List<Object> contentList2 = body.getContent();
             List<Object> contentList = wordMLPackage.getMainDocumentPart().getContent();
             int pageNum = 1;
 
@@ -45,3 +52,4 @@ public class Main {
         }
     }
 }
+
