@@ -16,7 +16,7 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
     <dependencies>
-<!--        tio依赖-->
+        <!--        tio依赖-->
         <dependency>
             <groupId>org.t-io</groupId>
             <artifactId>tio-core</artifactId>
@@ -122,28 +122,33 @@
         <dependency>
             <groupId>org.docx4j</groupId>
             <artifactId>docx4j-core</artifactId>
-            <version>8.0.0</version>
+            <version>6.1.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-openxml-objects</artifactId>
-            <version>8.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-            <version>8.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-export-fo</artifactId>
-            <version>8.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-ImportXHTML</artifactId>
-            <version>8.0.0</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.docx4j</groupId>-->
+        <!--            <artifactId>docx4j-core</artifactId>-->
+        <!--            <version>8.0.0</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.docx4j</groupId>-->
+        <!--            <artifactId>docx4j-openxml-objects</artifactId>-->
+        <!--            <version>8.2.2</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.docx4j</groupId>-->
+        <!--            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>-->
+        <!--            <version>8.0.0</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.docx4j</groupId>-->
+        <!--            <artifactId>docx4j-export-fo</artifactId>-->
+        <!--            <version>8.0.0</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.docx4j</groupId>-->
+        <!--            <artifactId>docx4j-ImportXHTML</artifactId>-->
+        <!--            <version>8.0.0</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -153,11 +158,11 @@
             <artifactId>commons-net</artifactId>
             <version>3.7</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.projectlombok</groupId>-->
-<!--            <artifactId>lombok</artifactId>-->
-<!--            <version>1.18.16</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.projectlombok</groupId>-->
+        <!--            <artifactId>lombok</artifactId>-->
+        <!--            <version>1.18.16</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -167,26 +172,14 @@
     <!-- 若想引用modbus4j需要引入下列repository id:ias-snapshots id:ias-releases 两个 ，使用默认仓库下载，不要使用阿里云仓库-->
     <repositories>
         <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>ias-snapshots</id>
-            <name>Infinite Automation Snapshot Repository</name>
-            <url>https://maven.mangoautomation.net/repository/ias-snapshot/</url>
-        </repository>
-        <repository>
+            <id>central</id>
+            <url>https://maven.aliyun.com/repository/central</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
-            <id>ias-releases</id>
-            <name>Infinite Automation Release Repository</name>
-            <url>https://maven.mangoautomation.net/repository/ias-release/</url>
         </repository>
     </repositories>
 </project>

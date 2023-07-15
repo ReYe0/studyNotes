@@ -386,3 +386,7 @@ Maven 对项目构建的生命周期划分为3套：
 > 注意：
 >
 > * 如果引入坐标不指定 `scope` 标签时，默认就是 compile  值。以后大部分jar包都是使用默认值。
+
+
+## 1.6 maven命令行安装
+mvn dependency:copy -Dartifact=org.docx4j:docx4j:6.1.2 -DoutputDirectory=<output_directory>
