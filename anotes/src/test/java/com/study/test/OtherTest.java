@@ -1,12 +1,16 @@
 package com.study.test;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.msg.WriteRegistersRequest;
+import com.sun.management.OperatingSystemMXBean;
 import org.dom4j.*;
+import org.hyperic.sigar.Sigar;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -26,16 +30,16 @@ import org.jfree.ui.TextAnchor;
 import org.junit.Test;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.DecimalFormat;
+import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +58,66 @@ public class OtherTest {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 获取硬盘空间信息
+     *
+     * @param dir 目录
+     * @return
+     * @throws IOException
+     */
+    public static Map<String, Long> getDiskSpace(String dir) throws IOException {
+        Sigar sigar = new Sigar();
+        File file = new File(dir);
+        if (!file.exists()) {
+            throw new IOException("dir not found: " + dir);
+        }
+
+        long totalSpace = file.getTotalSpace() / 1024l / 1024l;
+        long freeSpace = file.getFreeSpace() / 1024l / 1024l;
+        long usableSpace = file.getUsableSpace() / 1024l / 1024;
+
+        Map<String, Long> countTable = new HashMap<>(3);
+        countTable.put("totalSpace", totalSpace);
+        countTable.put("freeSpace", freeSpace);
+        countTable.put("usableSpace", usableSpace);
+        return countTable;
+    }
+
+    private static void os() {
+        File[] roots = File.listRoots();
+        OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        double cpuUsage = osBean.getSystemCpuLoad() * 100;
+        double cpuUsage2 = osBean.getProcessCpuLoad() * 100;
+        System.out.println(cpuUsage);
+        System.out.println(cpuUsage2);
+
+        // 获取内存信息
+        com.sun.management.OperatingSystemMXBean sunOsBean =
+                (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        long totalMemory = sunOsBean.getTotalPhysicalMemorySize();
+        long freeMemory = sunOsBean.getFreePhysicalMemorySize();
+        long usedMemory = totalMemory - freeMemory;
+
+        double memoryUsage = (double) usedMemory / totalMemory * 100;
+        System.out.println(memoryUsage);
+//        for (File _file : roots) {
+//
+//            System.out.println(_file.getPath());
+//
+////System.out.println(_file.getName());
+//
+//            System.out.println("Free space = " + _file.getFreeSpace());
+//
+//            System.out.println("Usable space = " + _file.getUsableSpace());
+//
+//            System.out.println("Total space = " + _file.getTotalSpace());
+//
+//            System.out.println("used space = " + (_file.getTotalSpace() - _file.getFreeSpace()));
+//
+//            System.out.println();
+//        }
     }
 
     @Test
@@ -303,7 +367,6 @@ public class OtherTest {
 
     }
 
-
     @Test
     public void test11() throws IOException {
         // A网站的访问量统计
@@ -380,7 +443,7 @@ public class OtherTest {
     }
 
     @Test
-    public  void test23423(){
+    public void test23423() {
 //        int a = 5;
 //        // 使用 log10() 方法计算位数
 //        int numOfDigits = (int) (Math.log10(a) + 1);
@@ -400,8 +463,113 @@ public class OtherTest {
 //            e.printStackTrace();
 //        }
 //        System.out.println(localIP);
-        DecimalFormat num_df = new DecimalFormat("#.000");
-        String formattedNum = num_df.format(0.1);
-        System.out.println(formattedNum);
+//        DecimalFormat num_df = new DecimalFormat("#.000");
+//        String formattedNum = num_df.format(0.1);
+//        System.out.println(formattedNum);
+//        System.out.println(80/26);
+//        System.out.println(80% 26 == 0 ? 0 : 1);
+//        int macNum = 40;
+//        System.out.println((macNum * 2) / 26 + (((macNum * 2) % 26) == 0 ? 0 : 1));
+//        macNum += 1+ 2+3;
+//        System.out.println(macNum);
+//        float a = ((1531978.0f - 1.0f) / 1000f - (1520411.0f - 1.0f) * 1.0f / 1000f / 1.0f) / 1.0f;
+//        System.out.println(a);
+//        BlockingQueue<String> queue = new ArrayBlockingQueue<String>(4);
+//        //添加元素
+//        queue.offer("a");
+//        queue.offer("b");
+//        queue.offer("c");
+//        queue.offer("d");
+//        if (queue.size() >= 4){
+//            queue.remove();
+//        }
+//        queue.offer("e");
+//        for(String q : queue){
+//            System.out.println(q);
+//        }
+
+        Properties properties = new Properties();
+
+        try {
+            String projectPath = System.getProperty("user.dir");
+            FileInputStream file = new FileInputStream("./src/main/resources/application.properties");
+            properties.load(file);
+            file.close();
+
+//            properties.setProperty("database.url", "jdbc:mysql://new_host:3306/new_db");
+//            properties.setProperty("database.username", "new_username");
+            properties.setProperty("tcpServerByPOF.tcpOrFtp", "false");
+
+            FileOutputStream fileOut = new FileOutputStream("application.properties");
+            properties.store(fileOut, null);
+            fileOut.close();
+
+            System.out.println("属性文件修改成功！");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test123() {
+        try {
+            os();
+//            Map<String, Long> diskSpace = getDiskSpace("D:\\");
+//            System.out.println(6);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSystemUsage() {
+        final long GB = 1024 * 1024 * 1024;
+        while (true) {
+            OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+            String osJson = JSON.toJSONString(operatingSystemMXBean);
+//            System.out.println("osJson is " + osJson);
+            JSONObject jsonObject = JSON.parseObject(osJson);
+            double processCpuLoad = jsonObject.getDouble("processCpuLoad") * 100;
+            double systemCpuLoad = jsonObject.getDouble("systemCpuLoad") * 100;
+            Long totalPhysicalMemorySize = jsonObject.getLong("totalPhysicalMemorySize");
+            Long freePhysicalMemorySize = jsonObject.getLong("freePhysicalMemorySize");
+            double totalMemory = 1.0 * totalPhysicalMemorySize / GB;
+            double freeMemory = 1.0 * freePhysicalMemorySize / GB;
+            double memoryUseRatio = 1.0 * (totalPhysicalMemorySize - freePhysicalMemorySize) / totalPhysicalMemorySize * 100;
+
+            StringBuilder result = new StringBuilder();
+            result.append(new Date(System.currentTimeMillis()))
+                    .append("\n系统CPU占用率: ")
+                    .append(twoDecimal(systemCpuLoad))
+                    .append("%，内存占用率：")
+                    .append(twoDecimal(memoryUseRatio))
+                    .append("%，系统总内存：")
+                    .append(twoDecimal(totalMemory))
+                    .append("GB，系统剩余内存：")
+                    .append(twoDecimal(freeMemory))
+                    .append("GB，该进程占用CPU：")
+                    .append(twoDecimal(processCpuLoad))
+                    .append("%");
+            File[] roots = File.listRoots();
+            for (File _file : roots) {
+                result.append("\t\n磁盘：" + _file.getPath())
+                                .append("\tFree space = " + _file.getFreeSpace() / 1024l / 1024l / 1024l + " GB")
+                                .append("\tUsable space = " + _file.getUsableSpace() / 1024l / 1024l / 1024l + " GB")
+                                .append("\tTotal space = " + _file.getTotalSpace() / 1024l / 1024l / 1024l + " GB")
+                                .append("\tused space = " + (_file.getTotalSpace() - _file.getFreeSpace()) / 1024l / 1024l / 1024l + " GB");
+            }
+            System.out.println(result.toString());
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public double twoDecimal(double doubleValue) {
+        BigDecimal bigDecimal = new BigDecimal(doubleValue).setScale(2, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 }

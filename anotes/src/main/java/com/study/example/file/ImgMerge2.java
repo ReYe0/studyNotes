@@ -50,8 +50,8 @@ public class ImgMerge2 {
         }
 // 保存图像
         String savePath = pathFile + "/";//文件存放路径
-        String fileName = createImageName() + ".jpg";//文件名称
-        String fileType = "jpg";//文件格式
+        String fileName = createImageName() + ".png";//文件名称
+        String fileType = "png";//文件格式
         saveImage(destImg, savePath, fileName, fileType);
         return savePath + fileName;
     }

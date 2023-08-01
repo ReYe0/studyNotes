@@ -12,7 +12,6 @@ public class ImageGenerator {
     public static void main(String[] args) {
         int width = 85;
         int height = 150;
-
         // 创建一个空白的 BufferedImage 对象
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
@@ -44,7 +43,7 @@ public class ImageGenerator {
         g2d.dispose();
 
         // 保存图片
-        File output = new File("generated_image.png");
+        File output = new File("D:\\generated_image.png");
         try {
             ImageIO.write(image, "png", output);
             System.out.println("图片生成成功！");

@@ -6,10 +6,7 @@ import org.apache.tools.tar.TarInputStream;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -208,85 +205,352 @@ public class TCPTest {
             String[] split = remoteSocketAddress.split(":");
             String replace = split[0].replace("/", "");
             //通过客户端套接字对象，socket获取字节输入流,读取的是客户端发送来的数据
-
             dis = new DataInputStream(socket.getInputStream());
-            byte[] startSign_arr = new byte[4];//起始标识，四个字节，16进制
-            dis.read(startSign_arr);
-            String startSign = bytesToHexString(startSign_arr);
+
+            while (true) {
+
+                byte[] startSign_arr = new byte[4];//起始标识，四个字节，16进制
+                dis.read(startSign_arr);
+                String startSign = bytesToHexString(startSign_arr);
 
 
-            byte dataVer_val = dis.readByte();//数据版本，一个字节，16进制
-            String hex = Integer.toHexString(0xFF & dataVer_val);
+                byte dataVer_val = dis.readByte();//数据版本，一个字节，16进制
+                String hex = Integer.toHexString(0xFF & dataVer_val);
 
-            byte verify_val = dis.readByte();//校验，一个字节
-            String verify = Integer.toHexString(0xFF & verify_val);
+                byte verify_val = dis.readByte();//校验，一个字节
+                String verify = Integer.toHexString(0xFF & verify_val);
 
-            byte[] deviceNum_arr = new byte[4];//设备序列号，四个字节
-            dis.read(deviceNum_arr);
-            int deviceNum = bytes2IntLittle(deviceNum_arr);
+                byte[] deviceNum_arr = new byte[4];//设备序列号，四个字节
+                dis.read(deviceNum_arr);
+                int deviceNum = bytes2IntLittle(deviceNum_arr);
 
-            byte[] deviceTime_arr = new byte[4];//设备时间，四个字节
-            dis.read(deviceTime_arr);
-            int i13 = bytes2IntLittle(deviceTime_arr);
-            String s3 = bytesToHexString(deviceTime_arr);
-
-
-            byte[] microsecond_arr = new byte[4];//微秒，四个字节
-            dis.read(microsecond_arr);
-            int microsecond = bytes2IntLittle(microsecond_arr);
-            System.out.println(microsecond);
+                byte[] deviceTime_arr = new byte[4];//设备时间，四个字节
+                dis.read(deviceTime_arr);
+                int i13 = bytes2IntLittle(deviceTime_arr);
+                String s3 = bytesToHexString(deviceTime_arr);
 
 
-            byte[] counter_arr = new byte[4];//计数器，四个字节
-            dis.read(counter_arr);
-            int i3 = bytes2IntLittle(counter_arr);
-            int i1 = bytes2IntBig(counter_arr);
+                byte[] microsecond_arr = new byte[4];//微秒，四个字节
+                dis.read(microsecond_arr);
+                int microsecond = bytes2IntLittle(microsecond_arr);
+                System.out.println(microsecond);
 
 
-            byte[] deviceStatus_arr = new byte[4];//设备状态，四个字节，16进制
-            dis.read(deviceStatus_arr);
-            int i = bytes2IntLittle(deviceStatus_arr);
+                byte[] counter_arr = new byte[4];//计数器，四个字节
+                dis.read(counter_arr);
+                int i3 = bytes2IntLittle(counter_arr);
+                int i1 = bytes2IntBig(counter_arr);
+
+
+                byte[] deviceStatus_arr = new byte[4];//设备状态，四个字节，16进制
+                dis.read(deviceStatus_arr);
+                int i = bytes2IntLittle(deviceStatus_arr);
 //            String s1 = "Ox" + Integer.toHexString(i);
 //            int s2 = Integer.parseInt(s1);
-            int c = 0x00000001;
-            boolean aa = i == c;
-            System.out.println(aa);
-            String deviceStatus = bytesToHex(deviceStatus_arr);
+                int c = 0x00000001;
+                boolean aa = i == c;
+                System.out.println(aa);
+                String deviceStatus = bytesToHex(deviceStatus_arr);
 
-            dis.read(new byte[4]);//设备状态2
-
-
-            float LaserTemperature = dis.readFloat();//激光器温度，4byte float
+                dis.read(new byte[4]);//设备状态2
 
 
-            byte ch_num_val = dis.readByte();//系统有效通道数，1byte
-            int ch_num = Byte.toUnsignedInt(ch_num_val);
+                float LaserTemperature = dis.readFloat();//激光器温度，4byte float
 
 
-            //方式一 pass
-            int a = 0;
-            for (int j = 0; j < 32; j++) {
-                byte sensor = dis.readByte();//传感器数量，一个通道一个字节
-                a += sensor;
+                byte ch_num_val = dis.readByte();//系统有效通道数，1byte
+                int ch_num = Byte.toUnsignedInt(ch_num_val);
+
+
+                //方式一 pass
+                int a = 0;
+                for (int j = 0; j < 32; j++) {
+                    byte sensor = dis.readByte();//传感器数量，一个通道一个字节
+                    a += sensor;
+                }
+                byte[] bytes = new byte[32];
+                dis.read(bytes);
+                ByteBuffer byteBuffer = ByteBuffer.allocate(32 * 4);
+                byteBuffer.put(bytes);
+                byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                ArrayList<Float> list = new ArrayList<>();
+                for (int m = 0; m < 24; m++) {//12个通道每个通道两个数据
+                    float aFloat = byteBuffer.getFloat(m * 4);
+                    list.add(aFloat);
+                }
+                dis.read(new byte[4]);
+                byte[] bytes1 = new byte[4];
+                dis.read(bytes1);
+                String s = bytesToHexString(bytes1);
+                System.out.println(s);
+                //服务器向客户端回数据，字节输出流，通过客户端套接字对象获取字节输出流
+
+                System.out.println(System.currentTimeMillis());
             }
-            byte[] bytes = new byte[32];
-            dis.read(bytes);
-            ByteBuffer byteBuffer = ByteBuffer.allocate(32 * 4);
-            byteBuffer.put(bytes);
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            ArrayList<Float> list = new ArrayList<>();
-            for (int m = 0; m < 24; m++) {//12个通道每个通道两个数据
-                float aFloat = byteBuffer.getFloat(m * 4);
-                list.add(aFloat);
-            }
-            dis.read(new byte[4]);
-            byte[] bytes1 = new byte[4];
-            dis.read(bytes1);
-            String s = bytesToHexString(bytes1);
-            System.out.println(s);
-            //服务器向客户端回数据，字节输出流，通过客户端套接字对象获取字节输出流
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                dis.close();
+                socket.close();
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    @Test
+    public void test4() {
+        ServerSocket server = null;
+        Socket socket = null;
+        DataInputStream dis = null;
+        try {
+            int b = 0;
             System.out.println(System.currentTimeMillis());
+            server = new ServerSocket(7002);
+            //调用服务器套接字对象中的方法accept()获取客户端套接字对象
+
+            HashMap<String, Object> map = new HashMap<>();
+            InetAddress inetAddress = server.getInetAddress();
+            boolean reuseAddress = server.getReuseAddress();
+            server.setSoTimeout(3000);
+            socket = server.accept();
+            InetAddress localAddress = socket.getLocalAddress();
+            String hostAddress = localAddress.getHostAddress();
+            String remoteSocketAddress = String.valueOf(socket.getRemoteSocketAddress());
+            map.put(String.valueOf(b), remoteSocketAddress);
+            String[] split = remoteSocketAddress.split(":");
+            String replace = split[0].replace("/", "");
+            //通过客户端套接字对象，socket获取字节输入流,读取的是客户端发送来的数据
+
+            dis = new DataInputStream(socket.getInputStream());
+            int a = 0;
+            while (true && a < 6000) {
+
+                byte[] startSign_arr = new byte[4];//起始标识，四个字节，16进制
+                dis.read(startSign_arr);
+                String startSign = bytesToHexString(startSign_arr);
+                System.out.println(startSign);
+                while (!"ffffffff".equals(startSign)){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    a++;
+                    System.out.println(startSign);
+                    startSign_arr = new byte[4];
+                    dis.read(startSign_arr);
+                    startSign = bytesToHexString(startSign_arr);
+                }
+
+
+                byte dataVer_val = dis.readByte();//数据版本，一个字节，16进制
+                String hex = Integer.toHexString(0xFF & dataVer_val);
+
+                byte verify_val = dis.readByte();//校验，一个字节
+                String verify = Integer.toHexString(0xFF & verify_val);
+
+                byte[] deviceNum_arr = new byte[4];//设备序列号，四个字节
+                dis.read(deviceNum_arr);
+                int deviceNum = bytes2IntLittle(deviceNum_arr);
+
+                byte[] deviceTime_arr = new byte[4];//设备时间，四个字节
+                dis.read(deviceTime_arr);
+                int i13 = bytes2IntLittle(deviceTime_arr);
+                String s3 = bytesToHexString(deviceTime_arr);
+
+
+                byte[] microsecond_arr = new byte[4];//微秒，四个字节
+                dis.read(microsecond_arr);
+                int microsecond = bytes2IntLittle(microsecond_arr);
+                System.out.println(microsecond);
+
+
+                byte[] counter_arr = new byte[4];//计数器，四个字节
+                dis.read(counter_arr);
+                int i3 = bytes2IntLittle(counter_arr);
+                int i1 = bytes2IntBig(counter_arr);
+
+
+                byte[] deviceStatus_arr = new byte[4];//设备状态，四个字节，16进制
+                dis.read(deviceStatus_arr);
+                int i = bytes2IntLittle(deviceStatus_arr);
+//            String s1 = "Ox" + Integer.toHexString(i);
+//            int s2 = Integer.parseInt(s1);
+                int c = 0x00000001;
+                boolean aa = i == c;
+                System.out.println(aa);
+                String deviceStatus = bytesToHex(deviceStatus_arr);
+
+                dis.read(new byte[4]);//设备状态2
+
+
+                float LaserTemperature = dis.readFloat();//激光器温度，4byte float
+
+
+                byte ch_num_val = dis.readByte();//系统有效通道数，1byte
+                int ch_num = Byte.toUnsignedInt(ch_num_val);
+
+
+                List<Integer> sensorList = new ArrayList<>();
+                for (int j = 0; j < ch_num; j++) {
+                    //传感器数量，一个通道一个字节
+                    sensorList.add((int) dis.readByte());
+                }
+                if (ch_num < 32) dis.read(new byte[32-ch_num]);
+                for (int j = 0; j < sensorList.size(); j++) {
+                    byte[] bytes = new byte[4 * sensorList.get(j)];
+                    dis.read(bytes);
+                }
+//                dis.read(new byte[4]);
+                byte[] bytes1 = new byte[4];
+                dis.read(bytes1);
+                String s = bytesToHexString(bytes1);
+                System.out.println(s);
+                //服务器向客户端回数据，字节输出流，通过客户端套接字对象获取字节输出流
+
+                System.out.println(System.currentTimeMillis());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                dis.close();
+                socket.close();
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void test5(){
+        while (true){
+            test4();
+        }
+    }
+    @Test
+    public void test6() {
+        ServerSocket server = null;
+        Socket socket = null;
+        DataInputStream dis = null;
+        try {
+            int b = 0;
+            System.out.println(System.currentTimeMillis());
+            server = new ServerSocket();
+            server.setSoTimeout(1000 * 60);
+            if (!server.isBound()){
+                server.bind(new InetSocketAddress("10.100.50.56",7002));
+            }
+//            server = new ServerSocket(7002);
+            //调用服务器套接字对象中的方法accept()获取客户端套接字对象
+
+            HashMap<String, Object> map = new HashMap<>();
+            InetAddress inetAddress = server.getInetAddress();
+            boolean reuseAddress = server.getReuseAddress();
+            server.setSoTimeout(3000);
+            socket = server.accept();
+            InetAddress localAddress = socket.getLocalAddress();
+            String hostAddress = localAddress.getHostAddress();
+            String remoteSocketAddress = String.valueOf(socket.getRemoteSocketAddress());
+            map.put(String.valueOf(b), remoteSocketAddress);
+            String[] split = remoteSocketAddress.split(":");
+            String replace = split[0].replace("/", "");
+            //通过客户端套接字对象，socket获取字节输入流,读取的是客户端发送来的数据
+
+            dis = new DataInputStream(socket.getInputStream());
+            int a = 0;
+            while (true && a < 6000) {
+
+                byte[] startSign_arr = new byte[4];//起始标识，四个字节，16进制
+                dis.read(startSign_arr);
+                String startSign = bytesToHexString(startSign_arr);
+                System.out.println(startSign);
+                while (!"ffffffff".equals(startSign)){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    a++;
+                    System.out.println(startSign);
+                    startSign_arr = new byte[4];
+                    dis.read(startSign_arr);
+                    startSign = bytesToHexString(startSign_arr);
+                }
+
+
+                byte dataVer_val = dis.readByte();//数据版本，一个字节，16进制
+                String hex = Integer.toHexString(0xFF & dataVer_val);
+
+                byte verify_val = dis.readByte();//校验，一个字节
+                String verify = Integer.toHexString(0xFF & verify_val);
+
+                byte[] deviceNum_arr = new byte[4];//设备序列号，四个字节
+                dis.read(deviceNum_arr);
+                int deviceNum = bytes2IntLittle(deviceNum_arr);
+
+                byte[] deviceTime_arr = new byte[4];//设备时间，四个字节
+                dis.read(deviceTime_arr);
+                int i13 = bytes2IntLittle(deviceTime_arr);
+                String s3 = bytesToHexString(deviceTime_arr);
+
+
+                byte[] microsecond_arr = new byte[4];//微秒，四个字节
+                dis.read(microsecond_arr);
+                int microsecond = bytes2IntLittle(microsecond_arr);
+                System.out.println(microsecond);
+
+
+                byte[] counter_arr = new byte[4];//计数器，四个字节
+                dis.read(counter_arr);
+                int i3 = bytes2IntLittle(counter_arr);
+                int i1 = bytes2IntBig(counter_arr);
+
+
+                byte[] deviceStatus_arr = new byte[4];//设备状态，四个字节，16进制
+                dis.read(deviceStatus_arr);
+                int i = bytes2IntLittle(deviceStatus_arr);
+//            String s1 = "Ox" + Integer.toHexString(i);
+//            int s2 = Integer.parseInt(s1);
+                int c = 0x00000001;
+                boolean aa = i == c;
+                System.out.println(aa);
+                String deviceStatus = bytesToHex(deviceStatus_arr);
+
+                dis.read(new byte[4]);//设备状态2
+
+
+                float LaserTemperature = dis.readFloat();//激光器温度，4byte float
+
+
+                byte ch_num_val = dis.readByte();//系统有效通道数，1byte
+                int ch_num = Byte.toUnsignedInt(ch_num_val);
+
+
+                List<Integer> sensorList = new ArrayList<>();
+                for (int j = 0; j < ch_num; j++) {
+                    //传感器数量，一个通道一个字节
+                    sensorList.add((int) dis.readByte());
+                }
+                if (ch_num < 32) dis.read(new byte[32-ch_num]);
+                for (int j = 0; j < sensorList.size(); j++) {
+                    byte[] bytes = new byte[4 * sensorList.get(j)];
+                    dis.read(bytes);
+                }
+//                dis.read(new byte[4]);
+                byte[] bytes1 = new byte[4];
+                dis.read(bytes1);
+                String s = bytesToHexString(bytes1);
+                System.out.println(s);
+                //服务器向客户端回数据，字节输出流，通过客户端套接字对象获取字节输出流
+
+                System.out.println(System.currentTimeMillis());
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
