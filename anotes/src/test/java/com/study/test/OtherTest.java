@@ -36,10 +36,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -571,5 +569,165 @@ public class OtherTest {
     public double twoDecimal(double doubleValue) {
         BigDecimal bigDecimal = new BigDecimal(doubleValue).setScale(2, RoundingMode.HALF_UP);
         return bigDecimal.doubleValue();
+    }
+
+    @Test
+    public void fsdf(){
+//        String filePath = "D:\\BaiduNetdiskDownload\\华能华池紫坊畔风电场_20230601_20230721_V2.0.7.5\\06号风机-Z6-叶片\\22061714081707197_20230601_20230722_sqlData.sql";
+        String filePath = "D:\\BaiduNetdiskDownload\\华能华池紫坊畔风电场_20230601_20230721_V2.0.7.5\\01号风机-Z1-\\22061714081813126_20230601_20230722_sqlData.sql";
+//        String filePath = "D:\\BaiduNetdiskDownload\\中广核湖北天门项目2023.4.19-5.24\\新建文本文档.txt";
+        long l = System.currentTimeMillis();
+        try {
+            // 创建输入流
+            FileInputStream inputStream = new FileInputStream(filePath);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            int available = inputStream.available();
+            // 创建临时文件，用于存储修改后的数据
+            //若空间不够，会导致数据被剪切掉
+            File[] roots = File.listRoots();
+            String disk = System.getProperty("java.io.tmpdir");
+            long usableSpace = 0l;
+            //选取一个空间最大的盘
+            for (File _file : roots) {
+                if (_file.getUsableSpace() > usableSpace ){
+                    usableSpace = _file.getUsableSpace();
+                    disk = _file.getPath();
+                }
+            }
+            File file = new File(disk + "temp\\");
+            if (!file.exists()) file.mkdir();
+            File tempFile = File.createTempFile("temp", null,file);//原本文件路径
+            PrintWriter printWriter = new PrintWriter(tempFile);
+
+            // 逐行处理文件内容
+            String line;
+            boolean flag = false;
+            String row3 = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("LOCK TABLES `d_")){//第一行
+                    String disable_keys = bufferedReader.readLine();
+                    if (disable_keys.contains("DISABLE KEYS")){//第二行
+                        row3 = bufferedReader.readLine();
+                        if (row3.contains("ENABLE KEYS ")){//第三行
+                            flag = false;//空表
+                            String s = bufferedReader.readLine();//去掉最后一行
+                            if (!s.contains("UNLOCK TABLES")){
+                                printWriter.println(s);
+                            }
+                        }else {
+                            flag = true;
+                        }
+                    }else {//第二次运行没有其他注释，第二行就是数据
+                        printWriter.println(line);
+                        printWriter.println(disable_keys);
+                    }
+                }else if (!(line.startsWith("/*!") && line.endsWith("*/;"))) {
+                    printWriter.println(line);
+                }
+                if (flag){
+                    printWriter.println(line);
+                    printWriter.println(row3);
+                    row3 = null;
+                    while (flag){
+                        String nextRow = bufferedReader.readLine();
+                        if (!nextRow.contains("` ENABLE KEYS")) printWriter.println(nextRow);
+                        if (nextRow.contains("UNLOCK TABLES")) flag = false;
+                    }
+                }
+            }
+            // 关闭流
+            bufferedReader.close();
+            printWriter.close();
+            inputStream.close();
+            inputStreamReader.close();
+
+            // 删除原始文件
+            File originalFile = new File(filePath);
+            originalFile.delete();
+
+            // 重命名临时文件为原始文件名
+            tempFile.renameTo(originalFile);
+            tempFile.deleteOnExit();
+            System.out.println("文件内容已成功修改！");
+        } catch (IOException e) {
+            System.out.println("处理文件时出现错误：" + e.getMessage());
+        }
+    }
+    @Test
+    public  void  sfd(){
+        String filePath = "D:\\BaiduNetdiskDownload\\华能华池紫坊畔风电场_20230601_20230721_V2.0.7.5\\01号风机-Z1-\\22061714081813126_20230601_20230722_sqlData.sql";
+        String[] split = filePath.split(File.separator);
+        List<String> list = Arrays.asList(split);
+        list.remove(list.size());
+        String s = list.toString();
+        System.out.println(s);
+    }
+
+    @Test
+    public void sdfasdf(){
+//        String disk = System.getProperty("java.io.tmpdir");
+//        System.out.println(disk);
+        File file = new File("D:\\BaiduNetdiskDownload\\华能华池紫坊畔风电场_20230601_20230721_V2.0.7.5\\06号风机-Z6-叶片\\22061714081707197_20230601_20230722_sqlData.sql");
+        String s = tail2(file, 1);
+        System.out.println(s.contains("-- Dump completed on"));
+
+    }
+    public String tail2( File file, int lines) {
+        java.io.RandomAccessFile fileHandler = null;
+        try {
+            fileHandler = new java.io.RandomAccessFile( file, "r" );
+            long fileLength = fileHandler.length() - 1;
+            StringBuilder sb = new StringBuilder();
+            int line = 0;
+            for(long filePointer = fileLength; filePointer != -1; filePointer--){
+                fileHandler.seek( filePointer );
+                int readByte = fileHandler.readByte();
+                //\n是换行，英文是linefeed，ASCII码是0xA。
+                //\r是回车，英文是carriage return ,ASCII码是0xD。
+                // windows下enter是 \n\r,unix下是\n,mac下是\r
+                //'\r'是回车，'\n'是换行，前者使光标到行首，后者使光标下移一格。通常用的Enter是两个加起来。
+                if( readByte == 0xA ) {//0xA是新行
+                    if (filePointer < fileLength) {
+                        line = line + 1;
+                    }
+                } else if( readByte == 0xD ) {//0xD是回车
+                    if (filePointer < fileLength-1) {
+                        line = line + 1;
+                    }
+                }
+                if (line >= lines) {
+                    break;
+                }
+                sb.append( ( char ) readByte );
+            }
+            String lastLine = sb.reverse().toString();
+            return lastLine;
+        } catch( java.io.FileNotFoundException e ) {
+            e.printStackTrace();
+            return null;
+        } catch( java.io.IOException e ) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            if (fileHandler != null )
+                try {
+                    fileHandler.close();
+                } catch (IOException e) {
+                }
+        }
+    }
+    @Test
+    public void sdfds(){
+//        final int[] arr = new int[2];
+//        arr[0] = 1;
+//        arr[1] = 2;
+//        arr[0] = 3;
+//        System.out.println(arr[0]);
+
+        String yearAndMonth = "5";
+//        if ("0".equals(yearAndMonth)) return "1998-08-28 12:00:00";
+        String year = "20" + yearAndMonth.substring(0, 2);//获取年份
     }
 }
