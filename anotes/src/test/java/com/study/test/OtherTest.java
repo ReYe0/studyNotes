@@ -2,16 +2,19 @@ package com.study.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.rits.cloning.Cloner;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.msg.WriteRegistersRequest;
+import com.study.example.juc.Demo;
 import com.sun.management.OperatingSystemMXBean;
 import org.dom4j.*;
 import org.hyperic.sigar.Sigar;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -23,6 +26,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -887,5 +891,17 @@ public class OtherTest {
         document.setXMLEncoding("UTF-8");
         //获取根节点元素对象
         return document.getRootElement();
+    }
+
+
+    public static void main(String[] args) {
+        Demo demo = new Demo();
+//        String[] conclusions = {"1","2"};
+        List<Demo> objects = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            Demo deepClone = new Cloner().deepClone(demo);
+            objects.add(deepClone);
+        }
+
     }
 }
