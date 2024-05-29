@@ -895,13 +895,5 @@ public class OtherTest {
 
 
     public static void main(String[] args) {
-        Demo demo = new Demo();
-//        String[] conclusions = {"1","2"};
-        List<Demo> objects = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            Demo deepClone = new Cloner().deepClone(demo);
-            objects.add(deepClone);
-        }
-
     }
 }
