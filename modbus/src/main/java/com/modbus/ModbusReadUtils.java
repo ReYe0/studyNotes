@@ -1,9 +1,6 @@
 package com.modbus;
 
-import com.serotonin.modbus4j.BatchRead;
-import com.serotonin.modbus4j.BatchResults;
-import com.serotonin.modbus4j.ModbusFactory;
-import com.serotonin.modbus4j.ModbusMaster;
+import com.serotonin.modbus4j.*;
 import com.serotonin.modbus4j.code.DataType;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
@@ -40,7 +37,8 @@ public class ModbusReadUtils {
         // modbusFactory.createRtuMaster(wapper); //RTU 协议
         // modbusFactory.createUdpMaster(params);//UDP 协议
         // modbusFactory.createAsciiMaster(wrapper);//ASCII 协议
-        ModbusMaster master = modbusFactory.createTcpMaster(params, false);// TCP 协议
+        // TCP 协议
+        ModbusMaster master = modbusFactory.createTcpMaster(params, false);
         master.init();
 
         return master;
@@ -116,8 +114,7 @@ public class ModbusReadUtils {
             throws ModbusTransportException, ErrorResponseException, ModbusInitException {
         // 04 Input Registers类型数据读取
         BaseLocator<Number> loc = BaseLocator.inputRegister(slaveId, offset, dataType);
-        Number value = getMaster(host, port).getValue(loc);
-        return value;
+        return getMaster(host, port).getValue(loc);
     }
 
     /**
@@ -149,6 +146,18 @@ public class ModbusReadUtils {
      */
     public static void main(String[] args) {
         try {
+//            ModbusSlaveSet tcpSlave = modbusFactory.createTcpSlave(false);
+            // 创建 Modbus TCP 参数
+//            IpParameters params = new IpParameters();
+//            params.setHost("0.0.0.0");
+//            params.setPort(10086);
+//            ModbusMaster tcpListener = modbusFactory.createTcpListener(params);
+//            System.out.println(tcpListener);
+
+//            ModbusMaster master = getMaster("192.168.0.80", 10123);
+//            System.out.println(master);
+            Number number = readInputRegisters("192.168.0.80", 10123, 11, 0, DataType.FOUR_BYTE_INT_SIGNED);
+            System.out.println(number);
 //            // 01测试
 //            Boolean v011 = readCoilStatus("localhost", 0, 1, 0);
 //            Boolean v012 = readCoilStatus("localhost", 0, 1, 1);
@@ -165,9 +174,9 @@ public class ModbusReadUtils {
 //            System.out.println("v023:" + v023);
 
             // 03测试f
-            for (int i = 0; i < 103; i++) {
-                Number v031 = readHoldingRegister("127.0.0.1", 505, 1, i, DataType.FOUR_BYTE_FLOAT);// 注意,float
-            }
+//            for (int i = 0; i < 103; i++) {
+//                Number v031 = readHoldingRegister("127.0.0.1", 505, 1, i, DataType.FOUR_BYTE_FLOAT);// 注意,float
+//            }
 //            Number v031 = readHoldingRegister("127.0.0.1", 505, 1, 0, DataType.FOUR_BYTE_FLOAT);// 注意,float
 //            Number v032 = readHoldingRegister("localhost", 0, 1, 3, DataType.FOUR_BYTE_FLOAT);// 同上
             //System.out.println("v031:" + v031);

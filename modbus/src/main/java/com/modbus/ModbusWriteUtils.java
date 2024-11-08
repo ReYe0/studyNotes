@@ -182,7 +182,7 @@ public class ModbusWriteUtils {
         try {
             //@formatter:off
             // 测试01
-//			boolean t01 = writeCoil(1, 0, true);
+//			boolean t01 = writeCoil("192.168.0.80", 10123, 11,0,true);
 //			System.out.println("T01:" + t01);
 
             // 测试02
