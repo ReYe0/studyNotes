@@ -1,4 +1,4 @@
-﻿# springbootBug和优化
+﻿# springboot work condition
 
 标签（空格分隔）： springboot
 
@@ -28,12 +28,12 @@ Consider the following:
 ```
 ### 解决一：项目不需要连数据库
 启动类加上如下注解
-```java
+```shell
 @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
 ```
 ### 解决二：项目需要连接数据库
 配置yml文件，eg：
-```ymal
+```shell
 #在application.properties/或者application.yml文件中没有添加数据库配置信息.
 spring:
   datasource:
@@ -53,7 +53,7 @@ mysql8以下的去除cj，更高版本的加上cj，eg：`driver-class-name: com
 <packaging>jar</packaging>
 ```
 如果pom中指定使用jar，系统不会自动读取到yml或者properties文件的，需要我们手动配置pom.xml。
-```pom
+```xml
 <!--build放在</dependencies>标签的后面，主要加入的是resources标签 -->
 <!--resources标签可以告诉系统启动的时候能够读取到这些后缀的文件 -->
 <build>
@@ -98,7 +98,13 @@ mysql8以下的去除cj，更高版本的加上cj，eg：`driver-class-name: com
 
 ### test类dao层注册失败
 测试类加上如下代码
-```java
+```shell
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = '启动类'.class)
+```
+
+### mybatis debug log startup
+```shell
+#在properties 文件中添加
+logging.level.com.example.datatransport.dao=debug
 ```
