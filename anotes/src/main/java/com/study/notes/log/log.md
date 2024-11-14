@@ -187,9 +187,9 @@
         可以包含零个或多个元素，标识这个appender将会添加到这个logger。
     -->
     <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
-    <logger name="org.springframework" level="INFO"></logger>
-    <logger name="org.mybatis" level="INFO"></logger>
-    <logger name="org.apache.zookeeper" level="INFO"></logger>
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.mybatis" level="INFO" />
+    <logger name="org.apache.zookeeper" level="INFO" />
 
     <!-- 4. 最终的策略 -->
     <!-- 4.1 开发环境:打印控制台-->
