@@ -3,11 +3,15 @@
 标签（空格分隔）： springboot
 
 ---
+
 ## pringboot的yml文件没有小叶子
-进入project structure  ——》
+
+进入project structure ——》
 
 ## Failed to configure a DataSource: ‘url‘ attribute is not specified and no embedded datasource
+
 报错信息如下
+
 ```shell
 ***************************
 APPLICATION FAILED TO START
@@ -26,13 +30,19 @@ Consider the following:
     If you want an embedded database (H2, HSQL or Derby), please put it on the classpath.
     If you have database settings to be loaded from a particular profile you may need to activate it (no profiles are currently active).
 ```
+
 ### 解决一：项目不需要连数据库
+
 启动类加上如下注解
+
 ```shell
 @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
 ```
+
 ### 解决二：项目需要连接数据库
+
 配置yml文件，eg：
+
 ```shell
 #在application.properties/或者application.yml文件中没有添加数据库配置信息.
 spring:
@@ -44,72 +54,80 @@ spring:
 ```
 
 ### 解决三：mysql版本问题
+
 mysql8以下的去除cj，更高版本的加上cj，eg：`driver-class-name: com.mysql.cj.jdbc.Driver`
 
-
 ### 解决四：项目没有加载到yml或者properties文件
+
 特别是自己的pom打包是jar的项目，请查看自己的pom.xml文件中的packaging
+
 ```pom
 <packaging>jar</packaging>
 ```
+
 如果pom中指定使用jar，系统不会自动读取到yml或者properties文件的，需要我们手动配置pom.xml。
+
 ```xml
 <!--build放在</dependencies>标签的后面，主要加入的是resources标签 -->
 <!--resources标签可以告诉系统启动的时候能够读取到这些后缀的文件 -->
 <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.yml</include>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                </includes>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.yml</include>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                </includes>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>lib</directory>
-                <includes>
-                    <include>**/*.jar</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+    <resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.yml</include>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+            </includes>
+            <filtering>false</filtering>
+        </resource>
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*.yml</include>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+            </includes>
+            <filtering>false</filtering>
+        </resource>
+        <resource>
+            <directory>lib</directory>
+            <includes>
+                <include>**/*.jar</include>
+            </includes>
+        </resource>
+    </resources>
+</build>
 ```
 
 ### 解决五：项目使用了springcloud+nacos系列
+
 需要配置启用了那个配置文件
 
-
 ### test类dao层注册失败
+
 测试类加上如下代码
+
 ```shell
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = '启动类'.class)
 ```
 
 ### mybatis debug log startup
+
 ```shell
 #在properties 文件中添加
 logging.level.com.example.datatransport.dao=debug
 ```
 
 ### @Autowired 和 @Resources 的区别
+
 ```shell
 @Autowired
 来源：@Autowired 是Spring框架提供的注解。
@@ -123,4 +141,80 @@ logging.level.com.example.datatransport.dao=debug
 如果你的项目严格遵循Spring框架，且主要关注类型安全，那么@Autowired可能是一个更好的选择。
 如果你需要跨不同Java容器的兼容性，或者更倾向于基于名称的装配，那么@Resource可能更适合你。
 在实际开发中，选择哪个注解取决于项目的具体需求和个人偏好。不过，通常推荐在一个项目中保持一致性，避免混合使用不同的注解风格，以减少潜在的混淆和维护成本。
+```
+
+### logback 的使用
+
+1.导入依赖：
+
+```shell
+ <!-- Logback Core -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.11</version> <!-- 选择合适的版本 -->
+        </dependency>
+
+        <!-- Logback Classic (用于替代 SLF4J 的实现) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.rxtx</groupId>
+            <artifactId>rxtx</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+```
+
+2.配置xml文件:logback.xml 放置在 resources 下
+
+```xml
+
+<configuration>
+
+
+    <!-- 控制台日志输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %white(-) %-15(%yellow([%10.20thread]))
+                %-55(%cyan(%.32logger{30}:%L)) %highlight(- %msg%n)
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- 普通应用日志文件输出 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按日期滚动日志文件 -->
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory> <!-- 保留30天的日志 -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %white(-) %-15(%yellow([%10.20thread]))
+                %-55(%cyan(%.32logger{30}:%L)) %highlight(- %msg%n)
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 定义全局的日志级别 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
+
+```
+
+3.调用
+```shell
+// 注意依赖引入错误会没有效果
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+private static final Logger log = LoggerFactory.getLogger(XXX.class);
 ```
