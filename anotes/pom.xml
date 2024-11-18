@@ -196,6 +196,11 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+
     </dependencies>
     <!-- 若想引用modbus4j需要引入下列repository id:ias-snapshots id:ias-releases 两个 ，使用默认仓库下载，不要使用阿里云仓库-->
     <repositories>
