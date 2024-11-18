@@ -218,3 +218,112 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 private static final Logger log = LoggerFactory.getLogger(XXX.class);
 ```
+
+### logback-spring 这个只需要 引入lombok的依赖，@Slf4j的注解就能使用
+1.引入 lombok 依赖
+2.创建logback-spring.xml文件，输入一下内容
+```xml
+<!-- 级别从高到低 OFF 、 FATAL 、 ERROR 、 WARN 、 INFO 、 DEBUG 、 TRACE 、 ALL -->
+<!-- 日志输出规则 根据当前ROOT 级别，日志输出时，级别高于root默认的级别时 会输出 -->
+<!-- 以下 每个配置的 filter 是过滤掉输出文件里面，会出现高级别文件，依然出现低级别的日志信息，通过filter 过滤只记录本级别的日志 -->
+<!-- scan 当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。 -->
+<!-- scanPeriod 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。 -->
+<!-- debug 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 动态日志级别 -->
+    <!--  <jmxConfigurator/>-->
+    <!-- 定义日志文件 输出位置 -->
+
+    <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="./log"/>
+    <property name="log.path" value="${logPath}/log/"/>
+    <!-- 日志最大的历史 30天 -->
+    <property name="maxHistory" value="10"/>
+    <!-- 设置日志输出格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %highlight(${LOG_LEVEL_PATTERN:-%5p}) %magenta(${PID:-})  [%yellow(%thread)] [%cyan(%logger{50} - %method:%line)] - %highlight(%msg%n)"/>
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] ${LOG_LEVEL_PATTERN:-%5p} ${PID:-}  [%thread] [%logger{50} - %method:%line] - %msg%n"/>
+
+    <!-- ConsoleAppender 控制台输出日志 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!-- INFO级别日志 appender -->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--记录的日志文件的路径及文件名-->
+        <file>${log.path}/info.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <!--日志记录器的滚动策略，按日期，按大小记录-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM,aux}/info.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+            <maxHistory>10</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--
+      <logger>用来设置某一个包或者具体的某一个类的日志打印级别、
+      以及指定<appender>。<logger>仅有一个name属性，
+      一个可选的level和一个可选的addtivity属性。
+      name:用来指定受此logger约束的某一个包或者具体的某一个类。
+      level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
+            还有一个特俗值INHERITED或者同义词NULL，代表强制执行上级的级别。
+            如果未设置此属性，那么当前logger将会继承上级的级别。
+      addtivity:是否向上级logger传递打印信息。默认是true。
+      <logger name="org.springframework.web" level="info"/>
+      <logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>
+    -->
+
+    <!--
+        使用mybatis的时候，sql语句是debug下才会打印，而这里我们只配置了info，所以想要查看sql语句的话，有以下两种操作：
+        第一种把<root level="info">改成<root level="DEBUG">这样就会打印sql，不过这样日志那边会出现很多其他消息
+        第二种就是单独给dao下目录配置debug模式，代码如下，这样配置sql语句会打印，其他还是正常info级别：
+        【logging.level.org.mybatis=debug logging.level.dao=debug】
+     -->
+
+    <!--
+        root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性
+        level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
+        不能设置为INHERITED或者同义词NULL。默认是DEBUG
+        可以包含零个或多个元素，标识这个appender将会添加到这个logger。
+    -->
+    <!-- 4  最终的策略：
+                     基本策略(root级) + 根据profile在启动时, logger标签中定制化package日志级别(优先级高于上面的root级)-->
+    <!-- root级别 DEBUG -->
+    <root>
+        <!-- 打印debug级别日志及以上级别日志 -->
+        <level value="Info"/>
+        <!-- 控制台输出 -->
+        <appender-ref ref="console"/>
+        <!-- 文件输出 -->
+        <appender-ref ref="INFO"/>
+        <!--    <appender-ref ref="DEBUG"/>-->
+        <!--    <appender-ref ref="TRACE"/>-->
+    </root>
+    <!--  &lt;!&ndash;不同业务打印到指定文件&ndash;&gt;-->
+    <!--  <logger name="byte" additivity="false" level="INFO">-->
+    <!--    <appender-ref ref="DELETE_INFO"/>-->
+    <!--  </logger>-->
+    <!--  &lt;!&ndash;  &lt;!&ndash;不同业务打印到指定文件&ndash;&gt;&ndash;&gt;-->
+    <!--  &lt;!&ndash; 生产环境, 指定某包日志为warn级 &ndash;&gt;-->
+    <!--  <logger name="org.springframework.jdbc.core.JdbcTemplate" level="info"/>-->
+    <!-- 特定某个类打印info日志, 比如application启动成功后的提示语 -->
+</configuration>
+```
