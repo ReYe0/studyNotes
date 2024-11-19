@@ -327,3 +327,12 @@ private static final Logger log = LoggerFactory.getLogger(XXX.class);
     <!-- 特定某个类打印info日志, 比如application启动成功后的提示语 -->
 </configuration>
 ```
+
+### springboot 启动后 立即执行
+1.必须的spring托管，没有则添加@Component，然后 implements CommandLineRunner 接口 重写 run 方法既可
+
+2.在 Spring Boot 应用程序中，ApplicationRunner 是一个接口，用于在应用程序启动完成后执行一些初始化任务。它提供了一个 run 方法，该方法在 SpringApplication.run 方法执行完毕后被调用。ApplicationRunner 接口的主要作用是在应用程序启动时执行一些自定义的逻辑。
+
+上述两个的区别为：
+ApplicationRunner：提供了 ApplicationArguments 对象，可以更方便地访问命令行参数。
+CommandLineRunner：提供了 String[] 数组，包含所有的命令行参数。
