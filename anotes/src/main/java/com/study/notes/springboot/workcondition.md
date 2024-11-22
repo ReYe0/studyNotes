@@ -336,3 +336,13 @@ private static final Logger log = LoggerFactory.getLogger(XXX.class);
 上述两个的区别为：
 ApplicationRunner：提供了 ApplicationArguments 对象，可以更方便地访问命令行参数。
 CommandLineRunner：提供了 String[] 数组，包含所有的命令行参数。
+
+
+## 注解 @ConditionalOnProperty
+
+作用 @ConditionalOnProperty 注解的主要作用是：
+
+* 根据配置属性的存在与否：如果配置属性存在，则加载相应的 Bean 或配置类。
+* 根据配置属性的值：如果配置属性的值符合预期，则加载相应的 Bean 或配置类。
+
+eg:@ConditionalOnProperty(name = "cs2290.version", havingValue = "1")

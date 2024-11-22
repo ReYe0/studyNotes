@@ -36,11 +36,3 @@ example.netty.time 中的代码实现（在echo基础上修改）。然后 telne
     * 编码：将 PacketHeader 对象编码为 ByteBuf，以便在网络中传输。
     * 解码：将接收到的 ByteBuf 解码为 PacketHeader 对象，以便应用程序处理。
 
-## 注解 @ConditionalOnProperty
-
-作用 @ConditionalOnProperty 注解的主要作用是：
-
-* 根据配置属性的存在与否：如果配置属性存在，则加载相应的 Bean 或配置类。
-* 根据配置属性的值：如果配置属性的值符合预期，则加载相应的 Bean 或配置类。
-
-eg:@ConditionalOnProperty(name = "cs2290.version", havingValue = "1")
