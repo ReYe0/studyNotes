@@ -346,3 +346,16 @@ CommandLineRunner：提供了 String[] 数组，包含所有的命令行参数�
 * 根据配置属性的值：如果配置属性的值符合预期，则加载相应的 Bean 或配置类。
 
 eg:@ConditionalOnProperty(name = "cs2290.version", havingValue = "1")
+
+
+
+## springboot jar端口号指定失效
+原因：没有引入springboot的web依赖
+
+eg：
+```xml
+ <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+ </dependency>
+```
