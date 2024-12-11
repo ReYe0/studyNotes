@@ -27,7 +27,7 @@ set "JAR_FILE=datatransport-0.0.1-SNAPSHOT.jar"
 
 REM 启动Java应用程序
 "%JAVA_PATH%" -jar "%JAR_FILE%" --server.port=10086
-
+endlocal
 PAUSE
 ```
 ## windows 停止 jar包
