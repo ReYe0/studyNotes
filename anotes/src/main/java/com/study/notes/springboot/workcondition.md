@@ -359,3 +359,162 @@ eg：
     <artifactId>spring-boot-starter-web</artifactId>
  </dependency>
 ```
+
+## @ConfigurationProperties 注解
+mark from : https://cloud.tencent.com/developer/article/2443870
+### 前言
+在Spring Boot框架中，@ConfigurationProperties注解提供了一种将外部配置（如application.properties或application.yml文件中的属性）绑定到Java对象的便捷方式。这种机制简化了配置管理，使得配置的变更更加灵活和动态。
+### 概述
+@ConfigurationProperties注解用于将配置文件中的属性绑定到一个组件的Bean上。它通常与@Component、@Service或@Configuration注解一起使用，以创建一个持有配置属性的Bean。
+### 源码解析
+@ConfigurationProperties注解的实现依赖于Spring Boot的ConfigurationPropertiesBindingPostProcessor后处理器。该后处理器在容器启动时扫描带有@ConfigurationProperties注解的Bean，并自动将配置属性绑定到Bean的字段上。
+### 案例分析
+假设我们的应用需要连接到数据库，我们可以在application.properties中设置数据库连接属性，并使用@ConfigurationProperties注解将这些属性绑定到一个配置类：
+application.properties
+```properties
+# application.properties
+database.url=jdbc:mysql://localhost:3306/mydb
+database.username=root
+database.password=secret
+```
+DatabaseProperties类
+```java
+@Component
+@ConfigurationProperties(prefix = "database")
+public class DatabaseProperties {
+    private String url;
+    private String username;
+    private String password;
+
+    // getters and setters
+}
+```
+1.@Component注解：DatabaseProperties类通过@Component注解被标记为一个Spring管理的组件，这意味着Spring容器会将其作为一个Bean进行管理。
+2.@ConfigurationProperties注解：@ConfigurationProperties注解用于将外部配置文件中的属性绑定到这个类的字段上。prefix = "database"属性指定了配置文件中相关属性的前缀，这样Spring就会自动查找以database开头的属性，并将它们映射到这个类的相应字段。
+3.字段定义：类中定义了三个私有字段url、username和password，这些字段将被用于存储配置文件中的值。
+4.Getters和Setters：虽然代码中没有显示，但是通常这些字段会有对应的公共getter和setter方法。这是JavaBean的标准实践，使得字段可以通过getter方法读取和通过setter方法修改。
+绑定过程
+当Spring容器启动时，它会查找带有@ConfigurationProperties注解的Bean，并尝试将配置文件中定义的属性绑定到这些Bean的字段上。在这个例子中，database.url、database.username和database.password将分别绑定到DatabaseProperties类的url、username和password字段。
+
+注意：
+1.java里面的大小写对应properties里面的“-”，eg：orderId -> order-id
+
+### 使用DatabaseProperties
+一旦DatabaseProperties Bean被创建并填充了配置值，你可以在应用程序的其他部分通过依赖注入使用这个Bean，例如在数据访问对象（DAO）或服务层中使用数据库连接信息。
+eg:
+```java
+@Service
+public class MyService {
+    private final DatabaseProperties databaseProperties;
+
+    @Autowired
+    public MyService(DatabaseProperties databaseProperties) {
+        this.databaseProperties = databaseProperties;
+    }
+
+    public void performDatabaseOperation() {
+        // 使用 databaseProperties.getUrl(), databaseProperties.getUsername(), databaseProperties.getPassword()
+    }
+}
+```
+在这个服务层的例子中，MyService通过构造函数注入了DatabaseProperties Bean，并可以在其方法中使用数据库连接信息。
+
+注意事项
+* 确保application.properties文件位于Spring Boot应用程序的src/main/resources目录下，或者Spring应用程序的类路径下的/config包中。
+* 属性名称必须遵循Spring的绑定规则，即字段名称和属性名称之间需要保持一致性（考虑下划线和驼峰命名的转换）。
+* 使用@ConfigurationProperties注解的类应该被标记为@Component，以便Spring容器可以自动检测并注册它。
+### 应用场景案例
+在微服务架构中，服务间的配置可能需要动态调整，如服务的端口号、连接的数据库等。使用@ConfigurationProperties可以轻松实现这些配置的动态绑定和更新。
+
+优缺点分析
+优点：
+
+* 解耦：将配置属性与业务逻辑解耦，提高代码的可维护性。
+* 灵活性：支持配置的动态更新，便于适应不同的部署环境。
+缺点：
+
+* 复杂性：对于复杂的配置结构，可能需要额外的处理逻辑。
+* 性能考虑：在某些情况下，频繁的配置更新可能会带来性能开销。
+
+### 核心类方法介绍
+@ConfigurationProperties注解的核心属性是prefix，它定义了配置文件中相关属性的前缀。此外，@PropertySource注解可以用于指定配置文件的位置。
+
+### 测试用例
+以下是一个简单的测试用例，演示如何使用@ConfigurationProperties注解：
+```java
+public class ConfigPropertiesDemo {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register(ConfigApp.class);
+        context.refresh();
+
+        DatabaseProperties dbProps = context.getBean(DatabaseProperties.class);
+        System.out.println("Database URL: " + dbProps.getUrl());
+    }
+}
+
+@Configuration
+@PropertySource("classpath:db.properties")
+public class ConfigApp {
+    @Bean
+    @ConfigurationProperties(prefix = "database")
+    public DatabaseProperties databaseProperties() {
+        return new DatabaseProperties();
+    }
+}
+
+@Component
+@ConfigurationProperties(prefix = "database")
+public class DatabaseProperties {
+    private String url;
+    private String username;
+    private String password;
+
+    // getters and setters
+}
+```
+
+针对如上示例代码，这里我给大家详细的代码剖析下，以便于帮助大家理解的更为透彻，帮助大家早日掌握。
+
+这段代码演示了如何在Spring应用程序中使用@ConfigurationProperties注解和@PropertySource注解来加载外部配置文件，并将其属性绑定到一个组件的字段上。以下是对代码的详细解释和分析：
+
+### ConfigPropertiesDemo类
+1.创建AnnotationConfigApplicationContext实例：创建了一个AnnotationConfigApplicationContext实例，它将被用来管理Spring的Bean。
+
+2.注册ConfigApp配置类：通过context.register(ConfigApp.class)将ConfigApp类注册到Spring容器中。ConfigApp类使用@Configuration注解标记，表明它是一个配置类。
+
+3.刷新容器：调用context.refresh()方法初始化Spring容器，这会触发Bean的创建、依赖注入、执行@PostConstruct注解的方法等。
+
+4.获取DatabaseProperties Bean：通过context.getBean(DatabaseProperties.class)获取DatabaseProperties类型的Bean，并打印其URL属性。
+
+### ConfigApp类
+1.@Configuration注解：ConfigApp类通过@Configuration注解标记，表明它是一个配置类，可以定义Bean和导入其他配置。
+
+2.@PropertySource注解：@PropertySource("classpath:db.properties")注解指定了外部配置文件的路径。这里假设db.properties文件位于类路径下。
+
+3.数据库属性Bean：定义了一个databaseProperties Bean，使用@ConfigurationProperties(prefix = "database")注解，将外部配置文件中以database为前缀的属性绑定到DatabaseProperties类的字段上。
+
+### DatabaseProperties类
+1.@Component注解：DatabaseProperties类通过@Component注解标记，表明它是一个Spring管理的组件。
+
+2.@ConfigurationProperties注解：@ConfigurationProperties(prefix = "database")注解用于将外部配置文件中的属性绑定到这个类的字段上。prefix = "database"属性指定了配置文件中相关属性的前缀。
+
+3.字段定义：类中定义了三个私有字段url、username和password，这些字段将被用于存储配置文件中的值。
+
+4.Getters和Setters：虽然代码中没有显示，但通常这些字段会有对应的公共getter和setter方法，这是JavaBean的标准实践。
+
+### 注意事项
+确保db.properties文件位于类路径下，例如src/main/resources目录。
+属性名称必须遵循Spring的绑定规则，即字段名称和属性名称之间需要保持一致性（考虑下划线和驼峰命名的转换）。
+使用@ConfigurationProperties注解的类应该被标记为@Component，以便Spring容器可以自动检测并注册它。
+
+### 扩展
+在实际开发中，你可能还需要添加异常处理逻辑，以处理配置文件加载或属性绑定过程中可能出现的任何问题。此外，对于更复杂的应用程序，可能需要配置更多的Spring组件，如数据源、事务管理器等。
+
+通过这种方式，开发者可以清晰地组织代码，提高代码的可维护性和可测试性。
+
+### 小结
+@ConfigurationProperties注解是Spring Boot中用于简化配置管理的强大工具。通过本文的学习，我们了解到如何使用@ConfigurationProperties注解来绑定配置文件中的属性到Java对象，并探讨了其在实际开发中的应用。
+
+### 总结
+@ConfigurationProperties注解是Spring Boot配置管理的关键工具之一。它通过提供一种声明式的方式来绑定配置属性，极大地简化了配置的管理和使用。开发者在使用时需要注意配置结构的复杂性，并根据实际需求合理使用。通过本文的深入分析和实践，我们希望能够帮助开发者更好地利用@ConfigurationProperties，构建灵活、可维护的Spring Boot应用程序。
