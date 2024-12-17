@@ -213,3 +213,85 @@
     }
 ```
 
+
+
+
+### docx 转 pdf
+1.引入依赖
+```shell
+<dependency>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox</artifactId>
+    <version>2.0.24</version> <!-- 请检查最新版本 -->
+</dependency>
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j</artifactId>
+    <version>6.1.2</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo -->
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-export-fo</artifactId>
+    <version>6.1.0</version>
+</dependency>
+```
+
+示例：
+
+```java
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class PdfPageCounter {
+    public static void main(String[] args) {
+        String pdfPath = getPdf(HmiproApplication.getPath(), "mingyang.docx");
+        int pdfCount = getPdfCount(pdfPath);
+        System.out.println(pdfCount);
+    }
+
+    public static String getPdf(String filePath,String fileName) {
+        try {
+            // 设置输入输出文件路径
+            File inputFile = new File(filePath + fileName);
+            String res = filePath+ File.separator + fileName + "pdf.pdf";
+            File outputFile = new File(res);
+
+            // 加载 DOCX 文件
+            WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(inputFile);
+
+            // 执行转换
+            Docx4J.toPDF(wordMLPackage, new FileOutputStream(outputFile));
+            return res;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int getPdfCount(String pdfPath){
+        File file = new File(pdfPath);
+        try (PDDocument document = PDDocument.load(file)) {
+            int numberOfPages = document.getNumberOfPages();
+            document.close();
+            file.deleteOnExit();
+            return numberOfPages;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+}
+```
