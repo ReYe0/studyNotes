@@ -297,7 +297,7 @@ public class PdfPageCounter {
 }
 ```
 
-#### 3.2 docx 转 paf （比上面个好）
+#### 3.2 docx 转 paf （比上面个好）不支持Linux和mac哦
 
 
 
