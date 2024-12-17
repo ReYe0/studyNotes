@@ -213,11 +213,12 @@
     }
 ```
 
+## 3.实际问题
 
+#### 3.1 docx 转 pdf（有些样式会失败）
 
-
-### docx 转 pdf（有些样式会失败）
 1.引入依赖
+
 ```shell
 <dependency>
     <groupId>org.apache.pdfbox</groupId>
@@ -296,8 +297,9 @@ public class PdfPageCounter {
 }
 ```
 
+#### 3.2 docx 转 paf （比上面个好）
 
-### docx 转 paf （比上面个好）
+
 
 ```shell
 
