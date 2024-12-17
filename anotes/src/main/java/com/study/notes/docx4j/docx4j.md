@@ -216,7 +216,7 @@
 
 
 
-### docx 转 pdf
+### docx 转 pdf（有些样式会失败）
 1.引入依赖
 ```shell
 <dependency>
@@ -293,5 +293,100 @@ public class PdfPageCounter {
         }
         return -1;
     }
+}
+```
+
+
+### docx 转 paf （比上面个好）
+
+```shell
+
+<dependency>
+    <groupId>com.documents4j</groupId>
+    <artifactId>documents4j-local</artifactId>
+    <version>1.0.3</version>
+</dependency>
+<dependency>
+    <groupId>com.documents4j</groupId>
+    <artifactId>documents4j-transformer-msoffice-word</artifactId>
+    <version>1.0.3</version>
+</dependency>
+
+<dependency>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox</artifactId>
+    <version>2.0.24</version> <!-- 请检查最新版本 -->
+</dependency>
+
+ <dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j</artifactId>
+    <version>6.1.2</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-export-fo</artifactId>
+    <version>6.1.0</version>
+</dependency>
+```
+
+```java
+import com.documents4j.api.DocumentType;
+import com.documents4j.api.IConverter;
+import com.documents4j.job.LocalConverter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+
+import java.io.*;
+
+public class PdfPageCounter {
+    public static void main(String[] args) throws Docx4JException {
+        String fileName = "demo.docx";
+        String path = "E:\\资料\\诊断报告";
+        String targetFile = path + File.separator + fileName;
+        String pdfPath = getPdf(path, fileName);
+        int pdfCount = getPdfCount(pdfPath);
+        System.out.println(pdfCount);
+    }
+    
+
+    public static int getPdfCount(String pdfPath){
+        File file = new File(pdfPath);
+        try (PDDocument document = PDDocument.load(file)) {
+            int numberOfPages = document.getNumberOfPages();
+            document.close();
+            file.deleteOnExit();
+            return numberOfPages;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static String getPdf(String path,String fileName) {
+        File inputWord = new File(path + File.separator + fileName);
+        String resPath = path + File.separator + fileName.replace(".docx",".pdf");
+        File outputFile = new File(resPath);
+        try  {
+            InputStream docxInputStream = new FileInputStream(inputWord);
+            OutputStream outputStream = new FileOutputStream(outputFile);
+            IConverter converter = LocalConverter.builder().build();
+            converter.convert(docxInputStream).as(DocumentType.DOCX).to(outputStream).as(DocumentType.PDF).execute();
+            outputStream.close();
+            System.out.println("success");
+            return resPath;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
 ```
