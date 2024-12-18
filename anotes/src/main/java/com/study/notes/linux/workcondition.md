@@ -49,3 +49,14 @@ sh /myApp/test/startup.sh
 chmod +x /etc/rc.d/rc.local
 chmod +x /myApp/test/startup.sh
 ```
+
+## linux 查找文件
+1.使用 `find` 命令
+
+`find` 是一个非常强大的命令行工具，用于在文件系统中搜索文件和目录。它可以在指定的路径下递归查找，并支持复杂的条件匹配。
+
+2.基本用法
+
+```bash
+find /path/to/search -name "filename"
+```
